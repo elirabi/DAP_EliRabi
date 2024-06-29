@@ -18,9 +18,9 @@ class LoginScreen extends StatelessWidget {
 class _LoginView extends StatelessWidget {
   TextEditingController userController = TextEditingController();
   TextEditingController passController = TextEditingController();
-
-  String user = "eliysofi";
-  String pass = "somoslindas";
+  List user = ['eliysofi', 'eli', 'sofi'];
+  List pass = ['somoslindas', 'hola', 'hello'];
+  int indiceUser = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -49,26 +49,56 @@ class _LoginView extends StatelessWidget {
                 obscureText: true,
                 decoration: const InputDecoration(
                   hintText: 'Password',
-                  icon: Icon(Icons.key)
+                  icon: Icon(Icons.lock_outline_rounded)
                   ),
               ),
               ElevatedButton(
                 onPressed: (){
-                  if(userController.text == 'eliysofi' && passController.text == 'somoslindas'){
-                    print("Continue");
-                    context.pushNamed(HomeScreen.name, extra: userController.text);
-                  }
-                  else if(userController.text == '' && passController.text == ''){
-                    print('Insertar usuario y contraseña');
-                  }
-                  else if(userController.text == ''){
-                    print('Insertar usuario');
-                  }
-                  else if(passController.text == ''){
-                    print('Insertar contraseña');
-                  }
-                  else if(userController.text != user || passController.text != pass){
-                    print('Usuario o Contraseña incorrecto');
+                  String inputUser = userController.text;
+                  String inputPass = passController.text;
+
+                    if (inputUser.isEmpty || inputPass.isEmpty) {
+                    SnackBar emptyFields = SnackBar(
+                      content: const Text('Incomplete fields',
+                      style: TextStyle(color: Colors.white)),
+                      backgroundColor: Color.fromARGB(255, 255, 64, 64),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15),),
+                      duration: const Duration(seconds: 3),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(emptyFields);
+                    return;
+                    }
+                    
+                  if (user.contains(inputUser) == false) {
+                    //print('Usuario no encontrado.');
+                    SnackBar userNotFound = SnackBar(
+                      content: const Text(
+                          'Usuario no encontrado. Intente de nuevo.',
+                          style: TextStyle(color: Colors.white)),
+                      backgroundColor: Color.fromARGB(255, 255, 64, 64),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      duration: const Duration(seconds: 2),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(userNotFound);
+                    return;
+                  } else {
+                    indiceUser = user.indexOf(inputUser);
+
+                    if (inputPass == pass[indiceUser]) {
+                      context.pushNamed(HomeScreen.name,
+                          extra: userController.text);
+                    } else {
+                      SnackBar incorrectPass = SnackBar(
+                        content: const Text('Incorrect password',
+                        style: TextStyle(color: Colors.white)),
+                        backgroundColor: Color.fromARGB(255, 255, 64, 64),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15), ),
+                        duration: const Duration(seconds: 2),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(incorrectPass);
+                    }
                   }
                 }, 
                 child: const Text("Login")
